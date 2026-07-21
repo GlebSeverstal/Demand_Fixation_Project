@@ -1316,5 +1316,87 @@
             setInterval(saveData, 30000);
         }
     </script>
+    <!-- КНОПКА ЭКСПОРТА ДАННЫХ -->
+<button id="exportBtn" class="export-btn" onclick="exportData()">
+    💾 Сохранить изменения для всех
+</button>
+
+<style>
+.export-btn {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+    z-index: 1000;
+    transition: all 0.3s ease;
+    border: 2px solid #28a745;
+}
+
+.export-btn:hover {
+    background: #218838;
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(40, 167, 69, 0.6);
+}
+
+.export-btn:active {
+    transform: scale(0.98);
+}
+</style>
+
+<script>
+function exportData() {
+    // Собираем все данные
+    const checkboxes = {};
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        if (cb.id && cb.id !== 'adminMode') {
+            checkboxes[cb.id] = cb.checked;
+        }
+    });
+
+    const data = {
+        employees: employees,
+        hygieneData: hygieneData,
+        accuracyData: accuracyData,
+        checkboxes: checkboxes,
+        statuses: statuses,
+        timestamp: new Date().toISOString(),
+        version: '1.0'
+    };
+
+    // Создаем красивый JSON с отступами
+    const jsonString = JSON.stringify(data, null, 2);
+    
+    // Создаем файл для скачивания
+    const blob = new Blob([jsonString], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'data.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    // Показываем уведомление
+    const btn = document.getElementById('exportBtn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '✅ Файл скачан!';
+    btn.style.background = '#0066cc';
+    
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.style.background = '#28a745';
+    }, 3000);
+    
+    // Показываем инструкцию
+    alert('✅ Файл data.json скачан!\n\n📋 ЧТО ДЕЛАТЬ ДАЛЬШЕ:\n\n1. Откройте GitHub: github.com/GlebSeverstal/Demand_Fixation_Project\n2. Нажмите "Add file" → "Upload files"\n3. Перетащите файл data.json\n4. Нажмите "Commit changes"\n\n💡 После этого все пользователи увидят обновления!');
+}
+</script>
 </body>
 </html>
